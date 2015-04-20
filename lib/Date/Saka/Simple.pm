@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.01';
+$Date::Saka::Simple::VERSION = '0.02';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
