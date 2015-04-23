@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.02';
+$Date::Saka::Simple::VERSION = '0.03';
 
 =head1 NAME
 
@@ -8,24 +8,13 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 use Time::localtime;
-use Date::Utils qw(
-    $SAKA_YEAR
-    $SAKA_MONTH
-    $SAKA_DAY
-    $SAKA_MONTHS
-
-    jwday
-    gregorian_to_saka
-    saka_to_julian
-    julian_to_gregorian
-);
 
 use Moo;
 use namespace::clean;
@@ -38,19 +27,25 @@ Represents the Saka date.
 
 =cut
 
-has year  => (is => 'rw', isa => $SAKA_YEAR,  predicate => 1);
-has month => (is => 'rw', isa => $SAKA_MONTH, predicate => 1);
-has day   => (is => 'rw', isa => $SAKA_DAY,   predicate => 1);
+has year  => (is => 'rw', predicate => 1);
+has month => (is => 'rw', predicate => 1);
+has day   => (is => 'rw', predicate => 1);
+
+with 'Date::Utils::Saka';
 
 sub BUILD {
     my ($self) = @_;
+
+    $self->validate_year($self->year)   if $self->has_year;
+    $self->validate_month($self->month) if $self->has_month;
+    $self->validate_day($self->day)     if $self->has_day;
 
     unless ($self->has_year && $self->has_month && $self->has_day) {
         my $today = localtime;
         my $year  = $today->year + 1900;
         my $month = $today->mon + 1;
         my $day   = $today->mday;
-        my ($y, $m, $d) = gregorian_to_saka($year, $month, $day);
+        my ($y, $m, $d) = $self->gregorian_to_saka($year, $month, $day);
         $self->year($y);
         $self->month($m);
         $self->day($d);
@@ -88,7 +83,7 @@ Returns julian date equivalent of the Saka date.
 sub to_julian {
     my ($self) = @_;
 
-    return saka_to_julian($self->year, $self->month, $self->day);
+    return $self->saka_to_julian($self->year, $self->month, $self->day);
 }
 
 =head2 to_gregorian()
@@ -100,7 +95,7 @@ Returns gregorian date (yyyy-mm-dd) equivalent of the Saka date.
 sub to_gregorian {
     my ($self) = @_;
 
-    my @date = julian_to_gregorian($self->to_julian);
+    my @date = $self->julian_to_gregorian($self->to_julian);
     return sprintf("%04d-%02d-%02d", $date[0], $date[1], $date[2]);
 }
 
@@ -125,7 +120,7 @@ Returns day of the week, starting 0 for Ravivara, 1 for Somvara and so on.
 sub day_of_week {
     my ($self) = @_;
 
-    return jwday($self->to_julian);
+    return $self->jwday($self->to_julian);
 }
 
 =head2 add_days()
@@ -141,7 +136,7 @@ sub add_days {
 
     my ($year, $month, $day) = $self->to_gregorian();
     ($year, $month, $day) = Add_Delta_Days($year, $month, $day, $no_of_days);
-    ($year, $month, $day) = gregorian_to_saka($year, $month, $day);
+    ($year, $month, $day) = $self->gregorian_to_saka($year, $month, $day);
 
     $self->year($year);
     $self->month($month);
@@ -237,7 +232,7 @@ sub minus_years {
 sub as_string {
     my ($self) = @_;
 
-    return sprintf("%d, %s %d", $self->day, $SAKA_MONTHS->[$self->month], $self->year);
+    return sprintf("%d, %s %d", $self->day, $self->saka_months->[$self->month], $self->year);
 }
 
 =head1 AUTHOR

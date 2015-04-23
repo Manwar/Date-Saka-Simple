@@ -1,5 +1,8 @@
 Revision history for Date::Saka::Simple
 
+0.03  Thu Apr 23 23:33:00 2015
+      - Re-structured and consumed Date::Utils::Saka as Moo Role.
+
 0.02  Mon Apr 20 11:25:00 2015
       - Made Date::Utils v0.06 as minimum requirement, as reported by CPAN Testers.
 
