@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.03';
+$Date::Saka::Simple::VERSION = '0.04';
 
 =head1 NAME
 
@@ -8,13 +8,14 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 use Time::localtime;
+use Date::Calc qw(Add_Delta_Days);
 
 use Moo;
 use namespace::clean;
@@ -134,13 +135,16 @@ sub add_days {
 
     die("ERROR: Invalid day count.\n") unless ($no_of_days =~ /^\-?\d+$/);
 
-    my ($year, $month, $day) = $self->to_gregorian();
+    my $gregorian_date = $self->to_gregorian();
+    my ($year, $month, $day) = split /\-/, $gregorian_date, 3;
     ($year, $month, $day) = Add_Delta_Days($year, $month, $day, $no_of_days);
     ($year, $month, $day) = $self->gregorian_to_saka($year, $month, $day);
 
     $self->year($year);
     $self->month($month);
     $self->day($day);
+
+    return $self;
 }
 
 =head2 minus_days()
@@ -154,7 +158,9 @@ sub minus_days {
 
     die("ERROR: Invalid day count.\n") unless ($no_of_days =~ /^\d+$/);
 
-    return $self->add_days(-1 * $no_of_days);
+    $self->add_days(-1 * $no_of_days);
+
+    return $self;
 }
 
 =head2 add_months()
@@ -176,6 +182,8 @@ sub add_months {
     }
 
     $self->month($self->month + $no_of_months);
+
+    return $self;
 }
 
 =head2 minus_months()
@@ -199,6 +207,8 @@ sub minus_months {
     }
 
     $self->month($self->month - $no_of_months);
+
+    return $self;
 }
 
 =head2 add_years()
@@ -213,6 +223,8 @@ sub add_years {
     die("ERROR: Invalid year count.\n") unless ($no_of_years =~ /^\d+$/);
 
     $self->year($self->year + $no_of_years);
+
+    return $self;
 }
 
 =head2 minus_years()
@@ -227,12 +239,14 @@ sub minus_years {
     die("ERROR: Invalid year count.\n") unless ($no_of_years =~ /^\d+$/);
 
     $self->year($self->year - $no_of_years);
+
+    return $self;
 }
 
 sub as_string {
     my ($self) = @_;
 
-    return sprintf("%d, %s %d", $self->day, $self->saka_months->[$self->month], $self->year);
+    return sprintf("%02d, %s %04d", $self->day, $self->saka_months->[$self->month], $self->year);
 }
 
 =head1 AUTHOR

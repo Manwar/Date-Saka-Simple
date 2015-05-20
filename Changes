@@ -1,5 +1,13 @@
 Revision history for Date::Saka::Simple
 
+0.04  Wed May 20 09:40:00 2015
+      - Added missing dependency Date::Calc.
+      - Updated method as_string() to return Saka date in correct format i.e. days to be 2-digits always.
+      - Added unit test for the following methods:
+        - add_days(), minus_days(), add_months, minus_months, add_years and minus_years().
+      - Updated the following methods to return $self, so that it can be chained.
+        - add_days(), minus_days(), add_months, minus_months, add_years and minus_years().
+
 0.03  Thu Apr 23 23:33:00 2015
       - Re-structured and consumed Date::Utils::Saka as Moo Role.
 
