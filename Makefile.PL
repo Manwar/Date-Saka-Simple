@@ -22,7 +22,8 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'               => 0,
         'namespace::clean'  => 0,
-        'Date::Utils::Saka' => 0,
+        'Date::Utils'       => '0.08',
+        'List::Util'        => '1.41',
         'Time::localtime'   => '1.02',
         'Date::Calc'        => '5.7',
     },

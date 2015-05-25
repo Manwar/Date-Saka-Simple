@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.04';
+$Date::Saka::Simple::VERSION = '0.05';
 
 =head1 NAME
 
@@ -8,14 +8,16 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
 use 5.006;
 use Data::Dumper;
 use Time::localtime;
-use Date::Calc qw(Add_Delta_Days);
+use List::Util qw/min/;
+use POSIX qw/floor/;
+use Date::Calc qw(Add_Delta_Days Delta_Days);
 
 use Moo;
 use namespace::clean;
@@ -28,11 +30,35 @@ Represents the Saka date.
 
 =cut
 
+my $SAKA_START  = 80;
+my $SAKA_OFFSET = 78;
+
+my $SAKA_MONTHS = [
+    undef,
+    'Chaitra', 'Vaisakha', 'Jyaistha',   'Asadha', 'Sravana', 'Bhadra',
+    'Asvina',  'Kartika',  'Agrahayana', 'Pausa',  'Magha',   'Phalguna'
+];
+
+my $SAKA_DAYS = [
+    '<yellow><bold>       Ravivara </bold></yellow>',
+    '<yellow><bold>        Somvara </bold></yellow>',
+    '<yellow><bold>    Mangalavara </bold></yellow>',
+    '<yellow><bold>      Budhavara </bold></yellow>',
+    '<yellow><bold> Brahaspativara </bold></yellow>',
+    '<yellow><bold>      Sukravara </bold></yellow>',
+    '<yellow><bold>       Sanivara </bold></yellow>',
+];
+
+has saka_days   => (is => 'ro', default => sub { $SAKA_DAYS   });
+has saka_months => (is => 'ro', default => sub { $SAKA_MONTHS });
+has saka_start  => (is => 'ro', default => sub { $SAKA_START  });
+has saka_offset => (is => 'ro', default => sub { $SAKA_OFFSET });
+
 has year  => (is => 'rw', predicate => 1);
 has month => (is => 'rw', predicate => 1);
 has day   => (is => 'rw', predicate => 1);
 
-with 'Date::Utils::Saka';
+with 'Date::Utils';
 
 sub BUILD {
     my ($self) = @_;
@@ -46,10 +72,10 @@ sub BUILD {
         my $year  = $today->year + 1900;
         my $month = $today->mon + 1;
         my $day   = $today->mday;
-        my ($y, $m, $d) = $self->gregorian_to_saka($year, $month, $day);
-        $self->year($y);
-        $self->month($m);
-        $self->day($d);
+        my $date  = $self->from_gregorian($year, $month, $day);
+        $self->year($date->year);
+        $self->month($date->month);
+        $self->day($date->day);
     }
 }
 
@@ -61,17 +87,35 @@ sub BUILD {
     # prints today's saka date
     print Date::Saka::Simple->new, "\n";
 
-    my $date = Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 });
-    print "Date: $date\n";
+    # prints the given saka date
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->as_string, "\n";
 
     # prints equivalent Julian date
-    print $date->to_julian, "\n";
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->to_julian, "\n";
 
     # prints equivalent Gregorian date
-    print $date->to_gregorian, "\n";
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->to_gregorian, "\n";
 
     # prints day of the week index (0 for Ravivara, 1 for Somvara and so on.
-    print $date->day_of_week, "\n";
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->day_of_week, "\n";
+
+    # add days to the given saka date and print
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->add_days(2)->as_string, "\n";
+
+    # minus days to the given saka date and print
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 10 })->minus_days(2)->as_string, "\n";
+
+    # add months to the given saka date and print
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->add_months(2)->as_string, "\n";
+
+    # minus months to the given saka date and print
+    print Date::Saka::Simple->new({ year => 1937, month => 3, day => 1 })->minus_months(2)->as_string, "\n";
+
+    # add years to the given saka date and print
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->add_years(2)->as_string, "\n";
+
+    # minus years to the given saka date and print
+    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->minus_years(2)->as_string, "\n";
 
 =head1 METHODS
 
@@ -84,20 +128,98 @@ Returns julian date equivalent of the Saka date.
 sub to_julian {
     my ($self) = @_;
 
-    return $self->saka_to_julian($self->year, $self->month, $self->day);
+    my $gregorian_year = $self->year + 78;
+    my $gregorian_day  = ($self->is_gregorian_leap_year($gregorian_year)) ? (21) : (22);
+    my $start = $self->gregorian_to_julian($gregorian_year, 3, $gregorian_day);
+
+    my ($julian);
+    if ($self->month == 1) {
+        $julian = $start + ($self->day - 1);
+    }
+    else {
+        my $chaitra = ($self->is_gregorian_leap_year($gregorian_year)) ? (31) : (30);
+        $julian = $start + $chaitra;
+        my $_month = $self->month - 2;
+        $_month = min($_month, 5);
+        $julian += $_month * 31;
+
+        if ($self->month >= 8) {
+            $_month  = $self->month - 7;
+            $julian += $_month * 30;
+        }
+
+        $julian += $self->day - 1;
+    }
+
+    return $julian;
+}
+
+=head2 from_julian($julian_date)
+
+Returns  Saka  date  as an object of type L<Date::Saka::Simple> equivalent of the
+Julian date C<$julian_date>.
+
+=cut
+
+sub from_julian {
+    my ($self, $julian_date) = @_;
+
+    $julian_date = floor($julian_date) + 0.5;
+    my $year     = ($self->julian_to_gregorian($julian_date))[0];
+    my $yday     = $julian_date - $self->gregorian_to_julian($year, 1, 1);
+    my $chaitra  = $self->days_in_chaitra($year);
+    $year = $year - $self->saka_offset;
+
+    if ($yday < $self->saka_start) {
+        $year--;
+        $yday += $chaitra + (31 * 5) + (30 * 3) + 10 + $self->saka_start;
+    }
+    $yday -= $self->saka_start;
+
+    my ($day, $month);
+    if ($yday < $chaitra) {
+        $month = 1;
+        $day   = $yday + 1;
+    }
+    else {
+        my $mday = $yday - $chaitra;
+        if ($mday < (31 * 5)) {
+            $month = floor($mday / 31) + 2;
+            $day   = ($mday % 31) + 1;
+        }
+        else {
+            $mday -= 31 * 5;
+            $month = floor($mday / 30) + 7;
+            $day   = ($mday % 30) + 1;
+        }
+    }
+
+    return Date::Saka::Simple->new({ year => $year, month => $month, day => $day });
 }
 
 =head2 to_gregorian()
 
-Returns gregorian date (yyyy-mm-dd) equivalent of the Saka date.
+Returns gregorian date as list (yyyy,mm,dd) equivalent of the Saka date.
 
 =cut
 
 sub to_gregorian {
     my ($self) = @_;
 
-    my @date = $self->julian_to_gregorian($self->to_julian);
-    return sprintf("%04d-%02d-%02d", $date[0], $date[1], $date[2]);
+    return $self->julian_to_gregorian($self->to_julian);
+}
+
+=head2 from_gregorian($year, $month, $day)
+
+Returns  Saka  date  as an object of type L<Date::Saka::Simple> equivalent of the
+given Gregorian date C<$year>, C<$month> and C<$day>.
+
+=cut
+
+sub from_gregorian {
+    my ($self, $year, $month, $day) = @_;
+
+    return $self->from_julian($self->gregorian_to_julian($year, $month, $day));
 }
 
 =head2 day_of_week()
@@ -135,14 +257,13 @@ sub add_days {
 
     die("ERROR: Invalid day count.\n") unless ($no_of_days =~ /^\-?\d+$/);
 
-    my $gregorian_date = $self->to_gregorian();
-    my ($year, $month, $day) = split /\-/, $gregorian_date, 3;
+    my ($year, $month, $day) = $self->to_gregorian();
     ($year, $month, $day) = Add_Delta_Days($year, $month, $day, $no_of_days);
-    ($year, $month, $day) = $self->gregorian_to_saka($year, $month, $day);
+    my $date = Date::Saka::Simple->new->from_gregorian($year, $month, $day);
 
-    $self->year($year);
-    $self->month($month);
-    $self->day($day);
+    $self->year($date->year);
+    $self->month($date->month);
+    $self->day($date->day);
 
     return $self;
 }
@@ -164,6 +285,8 @@ sub minus_days {
 }
 
 =head2 add_months()
+
+Add given number of months to the Saka date.
 
 =cut
 
@@ -241,6 +364,41 @@ sub minus_years {
     $self->year($self->year - $no_of_years);
 
     return $self;
+}
+
+=head2 days_in_chaitra($year)
+
+Returns number of days in the month of Chaitra in the given C<$year>.
+
+=cut
+
+sub days_in_chaitra {
+    my ($self, $year) = @_;
+
+    ($self->is_gregorian_leap_year($year)) ? (return 31) : (return 30);
+}
+
+=head2 days_in_saka_month_year($month, $year)
+
+Returns number of days in the given Saka C<$month> and C<$year>.
+
+=cut
+
+sub days_in_saka_month_year {
+    my ($self, $month, $year) = @_;
+
+    my @start = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 })->to_gregorian;
+    if ($month == 12) {
+        $year += 1;
+        $month = 1;
+    }
+    else {
+        $month += 1;
+    }
+
+    my @end = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 })->to_gregorian;
+
+    return Delta_Days(@start, @end);
 }
 
 sub as_string {
