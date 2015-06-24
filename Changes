@@ -1,5 +1,9 @@
 Revision history for Date::Saka::Simple
 
+0.06  Wed Jun 24 12:40:00 2015
+      - Added unit test for method from_gregorian() and from_julian().
+      - Added code for method from_gregorian() and from_julian() to the pod.
+
 0.05  Mon May 25 14:30:00 2015
       - Removed the dependency on Date::Utils::Saka.
       - Added the dependency on Date::Utils v0.08.

@@ -1,20 +1,33 @@
 #!/usr/bin/perl
 
 use 5.006;
-use Test::More tests => 10;
+use Test::More tests => 16;
 use strict; use warnings;
 use Date::Saka::Simple;
 
-is(Date::Saka::Simple->new({year => 1937, month => 1, day => 1}), '01, Chaitra 1937');
-is(Date::Saka::Simple->new({year => 1937, month => 1, day => 1})->to_julian, 2457103.5);
-is(Date::Saka::Simple->new({year => 1937, month => 1, day => 1})->day_of_week, 0);
-is(sprintf("%04d-%02d-%02d", Date::Saka::Simple->new({year => 1937, month => 1, day => 29})->to_gregorian), '2015-04-19');
+my $date = Date::Saka::Simple->new({year => 1937, month => 1, day => 1});
+is($date, '01, Chaitra 1937');
+is($date->to_julian, 2457103.5);
+is($date->day_of_week, 0);
+is(sprintf("%04d-%02d-%02d", $date->to_gregorian), '2015-03-22');
 
-is(Date::Saka::Simple->new({year => 1932, month => 12, day => 1})->add_days(10)->as_string, '11, Phalguna 1932');
-is(Date::Saka::Simple->new({year => 1932, month => 12, day => 11})->minus_days(5)->as_string, '06, Phalguna 1932');
+is($date->add_days(10)->as_string, '11, Chaitra 1937');
+is($date->minus_days(5)->as_string, '06, Chaitra 1937');
 
-is(Date::Saka::Simple->new({year => 1932, month => 6, day => 10})->add_months(2)->as_string, '10, Kartika 1932');
-is(Date::Saka::Simple->new({year => 1932, month => 6, day => 10})->minus_months(1)->as_string, '10, Sravana 1932');
+is($date->add_months(2)->as_string, '06, Jyaistha 1937');
+is($date->minus_months(1)->as_string, '06, Vaisakha 1937');
 
-is(Date::Saka::Simple->new({year => 1932, month => 6, day => 10})->add_years(2)->as_string, '10, Bhadra 1934');
-is(Date::Saka::Simple->new({year => 1932, month => 6, day => 10})->minus_years(1)->as_string, '10, Bhadra 1931');
+is($date->add_years(2)->as_string, '06, Vaisakha 1939');
+is($date->minus_years(1)->as_string, '06, Vaisakha 1938');
+
+my $gdate = $date->from_gregorian(2015, 3, 22);
+is($gdate->year, 1937);
+is($gdate->month, 1);
+is($gdate->day, 1);
+
+my $jdate = $date->from_julian(2457103.5);
+is($jdate->year, 1937);
+is($jdate->month, 1);
+is($jdate->day, 1);
+
+done_testing();

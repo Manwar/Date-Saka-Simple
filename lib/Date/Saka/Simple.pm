@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.05';
+$Date::Saka::Simple::VERSION = '0.06';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
@@ -84,38 +84,40 @@ sub BUILD {
     use strict; use warnings;
     use Date::Saka::Simple;
 
-    # prints today's saka date
+    # prints today's Saka date
     print Date::Saka::Simple->new, "\n";
 
-    # prints the given saka date
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->as_string, "\n";
+    my $date = Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 });
 
-    # prints equivalent Julian date
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->to_julian, "\n";
+    # prints the given Saka date
+    print $date->as_string, "\n";
 
-    # prints equivalent Gregorian date
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->to_gregorian, "\n";
+    # prints the equivalent Julian date
+    print $date->to_julian, "\n";
 
-    # prints day of the week index (0 for Ravivara, 1 for Somvara and so on.
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->day_of_week, "\n";
+    # prints the equivalent Gregorian date
+    print sprintf("%04d-%02d-%02d", $date->to_gregorian), "\n";
 
-    # add days to the given saka date and print
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->add_days(2)->as_string, "\n";
+    # prints day of the week index (0 for Ravivara, 1 for Somvara and so on).
+    print $date->day_of_week, "\n";
 
-    # minus days to the given saka date and print
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 10 })->minus_days(2)->as_string, "\n";
+    # add days to the given Saka date and print
+    print $date->add_days(2)->as_string, "\n";
 
-    # add months to the given saka date and print
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->add_months(2)->as_string, "\n";
+    # minus days to the given Saka date and print
+    print $date->minus_days(2)->as_string, "\n";
 
-    # minus months to the given saka date and print
-    print Date::Saka::Simple->new({ year => 1937, month => 3, day => 1 })->minus_months(2)->as_string, "\n";
+    # add months to the given Saka date and print
+    print $date->add_months(2)->as_string, "\n";
 
-    # add years to the given saka date and print
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->add_years(2)->as_string, "\n";
+    # minus months to the given Saka date and print
+    print $date->minus_months(2)->as_string, "\n";
 
-    # minus years to the given saka date and print
-    print Date::Saka::Simple->new({ year => 1937, month => 1, day => 1 })->minus_years(2)->as_string, "\n";
+    # add years to the given Saka date and print
+    print $date->add_years(2)->as_string, "\n";
+
+    # minus years to the given Saka date and print
+    print $date->minus_years(2)->as_string, "\n";
 
 =head1 METHODS
 
