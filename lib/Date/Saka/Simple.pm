@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.06';
+$Date::Saka::Simple::VERSION = '0.07';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
@@ -368,23 +368,11 @@ sub minus_years {
     return $self;
 }
 
-=head2 days_in_chaitra($year)
-
-Returns number of days in the month of Chaitra in the given C<$year>.
-
-=cut
-
 sub days_in_chaitra {
     my ($self, $year) = @_;
 
     ($self->is_gregorian_leap_year($year)) ? (return 31) : (return 30);
 }
-
-=head2 days_in_saka_month_year($month, $year)
-
-Returns number of days in the given Saka C<$month> and C<$year>.
-
-=cut
 
 sub days_in_saka_month_year {
     my ($self, $month, $year) = @_;
