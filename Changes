@@ -1,5 +1,9 @@
 Revision history for Date::Saka::Simple
 
+0.08  Mon Jul 20 11:45:00 2015
+      - Added the dependency on Date::Utils v0.10.
+      - Added method get_calendar().
+
 0.07  Mon Jul 06 09:15:00 2015
       - Added the dependency on Date::Utils v0.09.
       - Tidied up pod document in general.

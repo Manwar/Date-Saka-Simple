@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.07';
+$Date::Saka::Simple::VERSION = '0.08';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
@@ -40,13 +40,8 @@ my $SAKA_MONTHS = [
 ];
 
 my $SAKA_DAYS = [
-    '<yellow><bold>       Ravivara </bold></yellow>',
-    '<yellow><bold>        Somvara </bold></yellow>',
-    '<yellow><bold>    Mangalavara </bold></yellow>',
-    '<yellow><bold>      Budhavara </bold></yellow>',
-    '<yellow><bold> Brahaspativara </bold></yellow>',
-    '<yellow><bold>      Sukravara </bold></yellow>',
-    '<yellow><bold>       Sanivara </bold></yellow>',
+    'Ravivara', 'Somvara', 'Mangalavara', 'Budhavara',
+    'Brahaspativara', 'Sukravara', 'Sanivara'
 ];
 
 has saka_days   => (is => 'ro', default => sub { $SAKA_DAYS   });
@@ -246,6 +241,32 @@ sub day_of_week {
     my ($self) = @_;
 
     return $self->jwday($self->to_julian);
+}
+
+
+=head2 get_calendar($month, $year)
+
+Returns color coded Saka calendar for the given C<$month> and C<$year>.
+
+=cut
+
+sub get_calendar {
+    my ($self, $month, $year) = @_;
+
+    $self->validate_month($month);
+    $self->validate_year($year);
+
+    my $date = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 });
+    my $days = $self->days_in_saka_month_year($month, $year);
+
+    return $self->create_calendar(
+        {
+            start_index => $date->day_of_week,
+            month_name  => $self->saka_months->[$month],
+            days        => $days,
+            day_names   => $self->saka_days,
+            year        => $year
+        });
 }
 
 =head2 add_days()
