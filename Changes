@@ -1,5 +1,15 @@
 Revision history for Date::Saka::Simple
 
+0.09  Thu Aug 27 10:50:00 2015
+      - Added the dependency on Date::Utils v0.11.
+      - Updated the following methods to make use of Date::Exception package:
+        - add_days()
+        - minus_days()
+        - add_months()
+        - minus_months()
+        - add_years()
+        - minus_years()
+
 0.08  Mon Jul 20 11:45:00 2015
       - Added the dependency on Date::Utils v0.10.
       - Added method get_calendar().

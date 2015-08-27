@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.08';
+$Date::Saka::Simple::VERSION = '0.09';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
@@ -18,6 +18,9 @@ use Time::localtime;
 use List::Util qw/min/;
 use POSIX qw/floor/;
 use Date::Calc qw(Add_Delta_Days Delta_Days);
+use Date::Exception::InvalidDayCount;
+use Date::Exception::InvalidMonthCount;
+use Date::Exception::InvalidYearCount;
 
 use Moo;
 use namespace::clean;
@@ -278,7 +281,15 @@ Add given number of days to the Saka date.
 sub add_days {
     my ($self, $no_of_days) = @_;
 
-    die("ERROR: Invalid day count.\n") unless ($no_of_days =~ /^\-?\d+$/);
+    my @caller = caller(0);
+    @caller    = caller(2) if $caller[3] eq '(eval)';
+
+    Date::Exception::InvalidDayCount->throw({
+        method      => __PACKAGE__."::add_days",
+        message     => 'ERROR: Invalid day count.',
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless ($no_of_days =~ /^\-?\d+$/);
 
     my ($year, $month, $day) = $self->to_gregorian();
     ($year, $month, $day) = Add_Delta_Days($year, $month, $day, $no_of_days);
@@ -300,7 +311,15 @@ Minus given number of days from the Saka date.
 sub minus_days {
     my ($self, $no_of_days) = @_;
 
-    die("ERROR: Invalid day count.\n") unless ($no_of_days =~ /^\d+$/);
+    my @caller = caller(0);
+    @caller    = caller(2) if $caller[3] eq '(eval)';
+
+    Date::Exception::InvalidDayCount->throw({
+        method      => __PACKAGE__."::minus_days",
+        message     => 'ERROR: Invalid day count.',
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless ($no_of_days =~ /^\d+$/);
 
     $self->add_days(-1 * $no_of_days);
 
@@ -316,7 +335,15 @@ Add given number of months to the Saka date.
 sub add_months {
     my ($self, $no_of_months) = @_;
 
-    die("ERROR: Invalid month count.\n") unless ($no_of_months =~ /^\d+$/);
+    my @caller = caller(0);
+    @caller    = caller(2) if $caller[3] eq '(eval)';
+
+    Date::Exception::InvalidMonthCount->throw({
+        method      => __PACKAGE__."::add_months",
+        message     => 'ERROR: Invalid month count.',
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless ($no_of_months =~ /^\d+$/);
 
     if (($self->month + $no_of_months) > 12) {
         while (($self->month + $no_of_months) > 12) {
@@ -341,7 +368,15 @@ Minus given number of months from the Saka date.
 sub minus_months {
     my ($self, $no_of_months) = @_;
 
-    die("ERROR: Invalid month count.\n") unless ($no_of_months =~ /^\d+$/);
+    my @caller = caller(0);
+    @caller    = caller(2) if $caller[3] eq '(eval)';
+
+    Date::Exception::InvalidMonthCount->throw({
+        method      => __PACKAGE__."::minus_months",
+        message     => 'ERROR: Invalid month count.',
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless ($no_of_months =~ /^\d+$/);
 
     if (($self->month - $no_of_months) < 1) {
         while (($self->{mm} - $no_of_months) < 1) {
@@ -366,7 +401,15 @@ Add given number of years to the Saka date.
 sub add_years {
     my ($self, $no_of_years) = @_;
 
-    die("ERROR: Invalid year count.\n") unless ($no_of_years =~ /^\d+$/);
+    my @caller = caller(0);
+    @caller    = caller(2) if $caller[3] eq '(eval)';
+
+    Date::Exception::InvalidYearCount->throw({
+        method      => __PACKAGE__."::add_years",
+        message     => 'ERROR: Invalid year count.',
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless ($no_of_years =~ /^\d+$/);
 
     $self->year($self->year + $no_of_years);
 
@@ -382,7 +425,15 @@ Minus given number of years from the Saka date.
 sub minus_years {
     my ($self, $no_of_years) = @_;
 
-    die("ERROR: Invalid year count.\n") unless ($no_of_years =~ /^\d+$/);
+    my @caller = caller(0);
+    @caller    = caller(2) if $caller[3] eq '(eval)';
+
+    Date::Exception::InvalidYearCount->throw({
+        method      => __PACKAGE__."::minus_years",
+        message     => 'ERROR: Invalid year count.',
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless ($no_of_years =~ /^\d+$/);
 
     $self->year($self->year - $no_of_years);
 
