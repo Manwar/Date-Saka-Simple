@@ -1,5 +1,10 @@
 Revision history for Date::Saka::Simple
 
+0.10  Sat Apr 23 13:20:00 2016
+      - Updated the dependency on Date::Utils v0.16.
+      - Added section "SEE ALSO".
+      - Updated copyright year information.
+
 0.09  Thu Aug 27 10:50:00 2015
       - Added the dependency on Date::Utils v0.11.
       - Updated the following methods to make use of Date::Exception package:
