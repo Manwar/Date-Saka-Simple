@@ -1,5 +1,13 @@
 Revision history for Date::Saka::Simple
 
+0.11  Fri May 20 10:30:00 2016
+      - Updated the dependency on Date::Utils v0.19.
+      - Updated method get_calendar() and method as_string() to use get_month_name().
+      - Renamed method saka_months() to months().
+      - Renamed method saka_days() to days().
+      - Renamed method get_days_in_saka_month_year() to get_days_in_month_year().
+      - Updated method get_calendar() to respect the above changes.
+
 0.10  Sat Apr 23 13:20:00 2016
       - Updated the dependency on Date::Utils v0.16.
       - Added section "SEE ALSO".

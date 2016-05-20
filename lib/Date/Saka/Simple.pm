@@ -1,6 +1,7 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION = '0.10';
+$Date::Saka::Simple::VERSION   = '0.11';
+$Date::Saka::Simple::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
 
@@ -8,7 +9,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
@@ -47,8 +48,8 @@ my $SAKA_DAYS = [
     'Brahaspativara', 'Sukravara', 'Sanivara'
 ];
 
-has saka_days   => (is => 'ro', default => sub { $SAKA_DAYS   });
-has saka_months => (is => 'ro', default => sub { $SAKA_MONTHS });
+has days        => (is => 'ro', default => sub { $SAKA_DAYS   });
+has months      => (is => 'ro', default => sub { $SAKA_MONTHS });
 has saka_start  => (is => 'ro', default => sub { $SAKA_START  });
 has saka_offset => (is => 'ro', default => sub { $SAKA_OFFSET });
 
@@ -246,7 +247,6 @@ sub day_of_week {
     return $self->jwday($self->to_julian);
 }
 
-
 =head2 get_calendar($month, $year)
 
 Returns color coded Saka calendar for the given C<$month> and C<$year>.
@@ -256,18 +256,27 @@ Returns color coded Saka calendar for the given C<$month> and C<$year>.
 sub get_calendar {
     my ($self, $month, $year) = @_;
 
-    $self->validate_month($month);
-    $self->validate_year($year);
+    if (defined $month && defined $year) {
+        $self->validate_month($month);
+        $self->validate_year($year);
+
+        if ($month !~ /^\d+$/) {
+            $month = $self->get_month_number($month);
+        }
+    }
+    else {
+        $month = $self->month;
+        $year  = $self->year;
+    }
 
     my $date = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 });
-    my $days = $self->days_in_saka_month_year($month, $year);
 
     return $self->create_calendar(
         {
             start_index => $date->day_of_week,
-            month_name  => $self->saka_months->[$month],
-            days        => $days,
-            day_names   => $self->saka_days,
+            month_name  => $date->get_month_name,
+            days        => $date->days_in_month_year($month, $year),
+            day_names   => $date->days,
             year        => $year
         });
 }
@@ -446,7 +455,7 @@ sub days_in_chaitra {
     ($self->is_gregorian_leap_year($year)) ? (return 31) : (return 30);
 }
 
-sub days_in_saka_month_year {
+sub days_in_month_year {
     my ($self, $month, $year) = @_;
 
     my @start = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 })->to_gregorian;
@@ -466,7 +475,7 @@ sub days_in_saka_month_year {
 sub as_string {
     my ($self) = @_;
 
-    return sprintf("%02d, %s %04d", $self->day, $self->saka_months->[$self->month], $self->year);
+    return sprintf("%02d, %s %04d", $self->day, $self->get_month_name, $self->year);
 }
 
 =head1 AUTHOR
