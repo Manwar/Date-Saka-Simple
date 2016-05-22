@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use 5.006;
-use Test::More tests => 16;
+use Test::More tests => 18;
 use strict; use warnings;
 use Date::Saka::Simple;
 
@@ -9,6 +9,8 @@ my $date = Date::Saka::Simple->new({year => 1937, month => 1, day => 1});
 is($date, '01, Chaitra 1937');
 is($date->to_julian, 2457103.5);
 is($date->day_of_week, 0);
+is($date->days_in_month_year(1, 1938), 30);
+is($date->days_in_month_year(2, 1938), 31);
 is(sprintf("%04d-%02d-%02d", $date->to_gregorian), '2015-03-22');
 
 is($date->add_days(10)->as_string, '11, Chaitra 1937');

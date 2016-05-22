@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION   = '0.11';
+$Date::Saka::Simple::VERSION   = '0.12';
 $Date::Saka::Simple::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
@@ -452,24 +452,29 @@ sub minus_years {
 sub days_in_chaitra {
     my ($self, $year) = @_;
 
-    ($self->is_gregorian_leap_year($year)) ? (return 31) : (return 30);
+    $self->days_in_month_year(1, $year);
 }
 
 sub days_in_month_year {
     my ($self, $month, $year) = @_;
 
-    my @start = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 })->to_gregorian;
-    if ($month == 12) {
-        $year += 1;
-        $month = 1;
+    if ($month == 1) {
+        return ($self->is_gregorian_leap_year($year)) ? (return 31) : (return 30);
     }
     else {
-        $month += 1;
+        my @start = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 })->to_gregorian;
+        if ($month == 12) {
+            $year += 1;
+            $month = 1;
+        }
+        else {
+            $month += 1;
+        }
+
+        my @end = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 })->to_gregorian;
+
+        return Delta_Days(@start, @end);
     }
-
-    my @end = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 })->to_gregorian;
-
-    return Delta_Days(@start, @end);
 }
 
 sub as_string {
