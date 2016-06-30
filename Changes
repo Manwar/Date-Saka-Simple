@@ -1,5 +1,9 @@
 Revision history for Date::Saka::Simple
 
+0.13  Thu Jun 30 10:30:00 2016
+      - Addressed issue raised in the CPAN Tester Report.
+        http://www.cpantesters.org/cpan/report/48e6a3f6-3d02-11e6-a5ff-abe4273a1f7f
+
 0.12  Sun May 22 03:00:00 2016
       - Added unit test for method days_in_month_year().
       - Refactored method days_in_chaitra() and days_in_month_year().
