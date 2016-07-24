@@ -21,7 +21,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'              => '2.000000',
         'namespace::clean' => '0.24',
-        'Date::Utils'      => '0.19',
+        'Date::Utils'      => '0.20',
         'Date::Exception'  => '0.03',
         'List::Util'       => '1.41',
         'Time::localtime'  => '1.02',

@@ -1,6 +1,6 @@
 package Date::Saka::Simple;
 
-$Date::Saka::Simple::VERSION   = '0.13';
+$Date::Saka::Simple::VERSION   = '0.14';
 $Date::Saka::Simple::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Date::Saka::Simple - Represents Saka date.
 
 =head1 VERSION
 
-Version 0.13
+Version 0.14
 
 =cut
 
@@ -245,40 +245,6 @@ sub day_of_week {
     my ($self) = @_;
 
     return $self->jwday($self->to_julian);
-}
-
-=head2 get_calendar($month, $year)
-
-Returns color coded Saka calendar for the given C<$month> and C<$year>.
-
-=cut
-
-sub get_calendar {
-    my ($self, $month, $year) = @_;
-
-    if (defined $month && defined $year) {
-        $self->validate_month($month);
-        $self->validate_year($year);
-
-        if ($month !~ /^\d+$/) {
-            $month = $self->get_month_number($month);
-        }
-    }
-    else {
-        $month = $self->month;
-        $year  = $self->year;
-    }
-
-    my $date = Date::Saka::Simple->new({ year => $year, month => $month, day => 1 });
-
-    return $self->create_calendar(
-        {
-            start_index => $date->day_of_week,
-            month_name  => $date->get_month_name,
-            days        => $date->days_in_month_year($month, $year),
-            day_names   => $date->days,
-            year        => $year
-        });
 }
 
 =head2 add_days()
