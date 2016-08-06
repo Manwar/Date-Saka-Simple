@@ -1,5 +1,8 @@
 Revision history for Date::Saka::Simple
 
+0.15  Sat Aug 06 11:45:00 2016
+      - Updated the dependency on Date::Utils v0.21.
+
 0.14  Sun Jul 24 08:50:00 2016
       - Updated the dependency on Date::Utils v0.20.
       - Dropped method get_calendar() as it's no longer relevant here.
