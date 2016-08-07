@@ -31,6 +31,9 @@ WriteMakefile(
     clean => { FILES => 'Date-Saka-Simple-*' },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
+        provides    => {
+            'Date::Saka::Simple' => { file => 'lib/Date/Saka/Simple.pm', version => '0.16' },
+        },
         resources => {
             repository => {
                 type => 'git',

@@ -1,5 +1,8 @@
 Revision history for Date::Saka::Simple
 
+0.16  Sun Aug 07 08:15:00 2016
+      - Added key 'provides' to the Makefile.PL script.
+
 0.15  Sat Aug 06 11:45:00 2016
       - Updated the dependency on Date::Utils v0.21.
 
