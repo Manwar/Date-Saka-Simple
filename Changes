@@ -1,5 +1,8 @@
 Revision history for Date::Saka::Simple
 
+0.17  Mon Nov 07 07:00:00 2016
+      - Added test scripts (t/meta-json.t and t/meta-yml.t).
+
 0.16  Sun Aug 07 08:15:00 2016
       - Added key 'provides' to the Makefile.PL script.
 
