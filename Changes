@@ -1,5 +1,8 @@
 Revision history for Date::Saka::Simple
 
+0.18  Fri Jan 20 11:55:00 2017
+      - Updated the dependency on Date::Utils v0.22.
+
 0.17  Mon Nov 07 07:00:00 2016
       - Added test scripts (t/meta-json.t and t/meta-yml.t).
 
