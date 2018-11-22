@@ -21,7 +21,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Moo'              => '2.000000',
         'namespace::clean' => '0.24',
-        'Date::Utils'      => '0.22',
+        'Date::Utils'      => '0.24',
         'Date::Exception'  => '0.03',
         'List::Util'       => '1.41',
         'Time::localtime'  => '1.02',
@@ -32,7 +32,7 @@ WriteMakefile(
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
         provides    => {
-            'Date::Saka::Simple' => { file => 'lib/Date/Saka/Simple.pm', version => '0.19' },
+            'Date::Saka::Simple' => { file => 'lib/Date/Saka/Simple.pm', version => '0.20' },
         },
         resources => {
             repository => {
